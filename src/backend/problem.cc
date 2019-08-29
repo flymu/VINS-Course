@@ -5,7 +5,12 @@
 #include "backend/problem.h"
 #include "utility/tic_toc.h"
 
+
+// #define USE_OPENMP 1
+
+// #ifdef USE_OPENMP
 #include <omp.h>
+// #endif
 
 using namespace std;
 
@@ -304,9 +309,9 @@ void Problem::MakeHessian() {
     VecX b(VecX::Zero(size));
 
     // TODO:: accelate, accelate, accelate
-//#ifdef USE_OPENMP
-//#pragma omp parallel for
-//#endif
+
+// #pragma omp parallel for num_threads(4)
+
     for (auto &edge: edges_) {
 
         edge.second->ComputeResidual();
@@ -316,6 +321,11 @@ void Problem::MakeHessian() {
         auto jacobians = edge.second->Jacobians();
         auto verticies = edge.second->Verticies();
         assert(jacobians.size() == verticies.size());
+
+        // #ifdef USE_OPENMP
+        #pragma omp parallel for num_threads(4)
+        // #endif
+
         for (size_t i = 0; i < verticies.size(); ++i) {
             auto v_i = verticies[i];
             if (v_i->IsFixed()) continue;    // Hessian 里不需要添加它的信息，也就是它的雅克比为 0
@@ -330,6 +340,9 @@ void Problem::MakeHessian() {
             edge.second->RobustInfo(drho,robustInfo);
 
             MatXX JtW = jacobian_i.transpose() * robustInfo;
+            // #ifdef USE_OPENMP
+            #pragma omp parallel for num_threads(4)
+            // #endif
             for (size_t j = i; j < verticies.size(); ++j) {
                 auto v_j = verticies[j];
 
