@@ -396,8 +396,8 @@ void Problem::SolveLinearSystem() {
         for (size_t i = 0; i < Hessian_.cols(); ++i) {
             H(i, i) += currentLambda_;
         }
-        // delta_x_ = PCGSolver(H, b_, H.rows() * 2);
-        delta_x_ = H.ldlt().solve(b_);
+        delta_x_ = PCGSolver(H, b_, H.rows() * 2);
+        // delta_x_ = H.ldlt().solve(b_);
 
     } else {
 
