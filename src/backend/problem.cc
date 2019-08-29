@@ -309,11 +309,18 @@ void Problem::MakeHessian() {
     VecX b(VecX::Zero(size));
 
     // TODO:: accelate, accelate, accelate
+    std::vector<std::pair<unsigned long, std::shared_ptr<Edge>>> edge_vector;
 
-// #pragma omp parallel for num_threads(4)
+    for(auto &edge:edges_)
+    {
+        edge_vector.push_back(edge);
+    }
 
-    for (auto &edge: edges_) {
 
+ #pragma omp parallel for num_threads(4)
+    for(int edge_num = 0;edge_num<edge_vector.size();edge_num++)
+    {
+        auto edge = edge_vector[edge_num];
         edge.second->ComputeResidual();
         edge.second->ComputeJacobians();
 
