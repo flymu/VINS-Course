@@ -5,11 +5,7 @@
 #include "backend/problem.h"
 #include "utility/tic_toc.h"
 
-#ifdef USE_OPENMP
-
 #include <omp.h>
-
-#endif
 
 using namespace std;
 
